@@ -1,3 +1,12 @@
 kindk8s % kubectl run -ti rednails --image busybox
 If you don't see a command prompt, try pressing enter.
 / # 
+
+kubectl attach mydoguinho -c mydoguinho -it
+If you don't see a command prompt, try pressing enter.
+/ # ps -ef
+PID   USER     TIME  COMMAND
+    1 root      0:00 sh
+   11 root      0:00 ps -ef
+/ # 
+
