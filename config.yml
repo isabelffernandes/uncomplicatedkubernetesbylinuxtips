@@ -1,0 +1,3 @@
+kindk8s % kubectl run -ti rednails --image busybox
+If you don't see a command prompt, try pressing enter.
+/ # 
