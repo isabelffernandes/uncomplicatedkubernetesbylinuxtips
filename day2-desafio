@@ -26,3 +26,18 @@ spec:
     emptyDir:
       sizeLimit: 500Mi
       medium: Memory
+
+
+ 1152  kubectl get pods
+ 1153  vim girus.yaml
+ 1154  kubectl  get pods
+ 1155  kubectl delete pods girus
+ 1156  kubectl apply -f girus.yaml
+ 1157  kubectl  get pods
+ 1158  kubectl  get pods
+ 1159  kubectl describe pods girus
+ 1160  kubectl  get pods
+ 1161  kubectl exec -ti girus -- bash
+ 1162  vim emptdir.yml
+ 1163  kubectl apply -f emptdir.yml
+ 1164  kubectl get pods
