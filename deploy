@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: d3-2-dpl
+  name: d3-2-dpl
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: d3-2-dpl
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: d3-2-dpl
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+status: {}
