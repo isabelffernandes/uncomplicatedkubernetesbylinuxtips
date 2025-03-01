@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: d3-nginx-deployment
+  labels:
+    app: d3-nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: d3-nginx
+  template:
+    metadata:
+      labels:
+        app: d3-nginx
+    spec:
+      containers:
+      - name: d3-nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
