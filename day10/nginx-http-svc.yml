@@ -1,0 +1,14 @@
+apiVersion: v1 # versão da API
+kind: Service # tipo de recurso, no caso, um Service
+metadata: # metadados do recurso
+  name: nginx-http-svc # nome do recurso
+  labels: # labels do recurso
+    app: nginx # label para identificar o svc
+spec: # especificação do recurso
+  type: ClusterIP # tipo do serviço
+  ports: # definição das portas do svc 
+    - port: 80 # porta do svc
+      targetPort: 80 # porta do container
+      name: http # nome da porta
+  selector: # seletor para identificar os pods/deployment que esse svc irá expor
+    app: nginx # label que identifica o pod/deployment que será exposto

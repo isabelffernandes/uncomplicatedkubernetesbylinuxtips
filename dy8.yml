@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dy8-giropops-secret
+type: Opaque
+data: # Inicio dos dados # cant hardcoded secrets on file should encrypt it or set up a vault
+    username: SmVmZXJzb25fbGluZG8=
+    password: Z2lyb3BvcHM=
+
+

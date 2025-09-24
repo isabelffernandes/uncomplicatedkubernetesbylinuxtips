@@ -1,0 +1,138 @@
+#configurando o node
+
+#desabilitando o swap
+  sudo swapoff -a
+  #carregando os módulos do kernel
+  cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+  overlay
+  br_netfilter
+  EOF
+  sudo modprobe overlay
+  sudo modprobe br_netfilter
+  #configurando o sysctl
+  cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+  net.bridge.bridge-nf-call-iptables  = 1 
+  net.bridge.bridge-nf-call-ip6tables = 1 
+  net.ipv4.ip_forward                 = 1 EOF
+  sudo sysctl --system
+  #instalando o kubectl e o kubeadm
+  sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+  #adicionando o repositório do kubernetes e instalando o kubectl e o kubeadm
+  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+  echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  sudo apt-get update sudo apt-get install -y kubelet kubeadm kubectl
+  sudo apt-mark hold kubelet kubeadm kubectl
+
+#instalando o containerd
+sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update && sudo apt-get install -y containerd.io
+
+#configurando o containerd
+sudo containerd config default | sudo tee /etc/containerd/config.toml
+
+sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+
+sudo systemctl restart containerd
+sudo systemctl status containerd
+
+#instalando o kubelet
+sudo systemctl enable --now kubelet
+
+#porta 6443
+sudo ufw allow 6443/tcp
+
+#porta 10250
+sudo ufw allow 10250/tcp 
+
+#porta 10251
+sudo ufw allow 10251/tcp #10251-10255
+
+#porta 6783
+sudo ufw allow 6783/tcp
+#porta 10252
+
+#inicializando o cluster
+sudo kubeadm init --pod-network-cidr=10.10.0.0/16 --apiserver-advertise-address=<O IP QUE VAI FALAR COM OS NODES>
+
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+#configurando o admin.conf diretório ~/.kube/
+vi admin.conf
+
+apiVersion: v1
+
+clusters:
+- cluster:
+    certificate-authority-data: SEU_CERTIFICADO_AQUI
+    server: https://172.31.57.89:6443
+  name: kubernetes
+
+contexts:
+- context:
+    cluster: kubernetes
+    user: kubernetes-admin
+  name: kubernetes-admin@kubernetes
+
+current-context: kubernetes-admin@kubernetes
+
+kind: Config
+
+preferences: {}
+
+users:
+- name: kubernetes-admin
+  user:
+    client-certificate-data: SUA_CHAVE_PUBLICA_AQUI
+    client-key-data: SUA_CHAVE_PRIVADA_AQUI
+
+
+- cluster:
+    certificate-authority-data: SEU_CERTIFICADO_AQUI
+    server: https://172.31.57.89:6443
+  name: kubernetes
+
+- context:
+    cluster: kubernetes
+    user: kubernetes-admin
+  name: kubernetes-admin@kubernetes  
+
+current-context: kubernetes-admin@kubernetes
+preferences: {}
+
+- name: kubernetes-admin
+  user:
+    client-certificate-data: SUA_CHAVE_PUBLICA_AQUI
+    client-key-data: SUA_CHAVE_PRIVADA_AQUI
+
+kubectl config view
+
+
+#workers
+sudo kubeadm join 172.31.57.89:6443 --token if9hn9.xhxo6s89byj9rsmd \
+	--discovery-token-ca-cert-hash sha256:ad583497a4171d1fc7d21e2ca2ea7b32bdc8450a1a4ca4cfa2022748a99fa477 
+
+  kubectl get nodes
+ 
+
+NAME     STATUS   ROLES           AGE   VERSION
+k8s-01   NotReady    control-plane   4m   v1.26.3
+k8s-02   NotReady    <none>          3m   v1.26.3
+k8s-03   NotReady    <none>          3m   v1.26.3
+
+$ kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+kubectl get pods -n kube-system
+kubectl get nodes
+
+kubectl create deployment nginx --image=nginx --replicas 3
+kubectl get pods -o wide
+kubectl describe node k8s-01
+kubectl get nodes k8s-02 -o wide
+kubectl get nodes k8s-03 -o wide

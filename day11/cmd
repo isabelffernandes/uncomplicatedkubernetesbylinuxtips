@@ -1,0 +1,84 @@
+care1@MacBookPro uncomplicatedkubernetesbylinuxtips % mkdir day11
+care1@MacBookPro uncomplicatedkubernetesbylinuxtips % cd day11
+care1@MacBookPro day11 % ls
+care1@MacBookPro day11 % alias kubectl=k
+care1@MacBookPro day11 % k get nodes
+zsh: command not found: k
+care1@MacBookPro day11 % alias k=kubectl
+care1@MacBookPro day11 % k get pods
+zsh: command not found: k
+care1@MacBookPro day11 % vim kind-config.yml
+care1@MacBookPro day11 % kubectl apply -f kind-config.yml 
+error: resource mapping not found for name: "" namespace: "" from "kind-config.yml": no matches for kind "Cluster" in version "kind.x-k8s.io/v1alpha4"
+ensure CRDs are installed first
+care1@MacBookPro day11 % kubectl get ingress
+NAME            CLASS   HOSTS                                          ADDRESS   PORTS   AGE
+nginx-ingress   nginx   nginx.local,grafana.local,alertmanager.local             80      38s
+care1@MacBookPro day11 % vim app-deply.yml
+care1@MacBookPro day11 % kubectl apply -f app-deply.yml 
+deployment.apps/giropops-senhas created
+care1@MacBookPro day11 % vim svc-app-deply.yml
+care1@MacBookPro day11 % kubectl apply -f svc-app-deply.yml 
+service/giropops-senhas created
+care1@MacBookPro day11 % vim red-deply.yml
+care1@MacBookPro day11 % kubectl apply -f red-deply.yml 
+deployment.apps/redis-deployment created
+care1@MacBookPro day11 % vim redis-svc.yml
+care1@MacBookPro day11 % kubectl apply -f redis-svc.yml 
+service/redis-service created
+care1@MacBookPro day11 % vim ing1.yml
+care1@MacBookPro day11 % kubectl apply -f ing1.yml     
+ingress.networking.k8s.io/giropops-senhas created
+care1@MacBookPro day11 % kubectl get ingress
+NAME              CLASS    HOSTS                                          ADDRESS      PORTS   AGE
+giropops-senhas   <none>   *                                                           80      18s
+nginx-ingress     nginx    nginx.local,grafana.local,alertmanager.local   172.19.0.2   80      20m
+care1@MacBookPro day11 % kubectl get ingress ingress-1 -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+
+Error from server (NotFound): ingresses.networking.k8s.io "ingress-1" not found
+care1@MacBookPro day11 % 
+ *  History restored 
+
+/dev/fd/13:2: command not found: compdef
+/dev/fd/13:18: command not found: compdef
+/dev/fd/13:2: command not found: compdef
+/dev/fd/13:18: command not found: compdef
+care1@MacBookPro day11 % ls
+app-deply.yml           kind-config.yml         redis-svc.yml
+ing1.yml                red-deply.yml           svc-app-deply.yml
+care1@MacBookPro day11 % kubectl get deploy -n ingress-nginx
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+ingress-nginx-controller   1/1     1            1           10d
+care1@MacBookPro day11 % kubectl config current-context
+kind-girus
+care1@MacBookPro day11 % kubectl get config-context    
+error: the server doesn't have a resource type "config-context"
+care1@MacBookPro day11 % kubectl get config-contexts
+error: the server doesn't have a resource type "config-contexts"
+care1@MacBookPro day11 % kubectl config get-contexts 
+CURRENT   NAME              CLUSTER           AUTHINFO                NAMESPACE
+          docker-desktop    docker-desktop    docker-desktop          
+          k3d-k3s-default   k3d-k3s-default   admin@k3d-k3s-default   
+*         kind-girus        kind-girus        kind-girus              
+care1@MacBookPro day11 % kubectl config use-context k3d-k3s-default 
+Switched to context "k3d-k3s-default".
+care1@MacBookPro day11 % kubectl get nodes
+NAME                       STATUS   ROLES                  AGE    VERSION
+k3d-k3s-default-server-0   Ready    control-plane,master   157d   v1.31.5+k3s1
+care1@MacBookPro day11 % kubectl config get-contexts                
+CURRENT   NAME              CLUSTER           AUTHINFO                NAMESPACE
+          docker-desktop    docker-desktop    docker-desktop          
+*         k3d-k3s-default   k3d-k3s-default   admin@k3d-k3s-default   
+          kind-girus        kind-girus        kind-girus              
+care1@MacBookPro day11 % kubectl config use-context docker-desktop  
+Switched to context "docker-desktop".
+care1@MacBookPro day11 % kubectl get nodes                        
+NAME             STATUS   ROLES           AGE    VERSION
+docker-desktop   Ready    control-plane   157d   v1.31.4
+care1@MacBookPro day11 % kubectl config use-context kind-girus    
+Switched to context "kind-girus".
+care1@MacBookPro day11 % kubectl get nodes                    
+NAME                  STATUS   ROLES           AGE    VERSION
+girus-control-plane   Ready    control-plane   167d   v1.27.3
+care1@MacBookPro day11 % kubectl config use-context k3d-k3s-default 
+Switched to context "k3d-k3s-default".

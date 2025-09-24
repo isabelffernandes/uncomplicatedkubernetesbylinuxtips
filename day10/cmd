@@ -1,0 +1,24 @@
+
+    kind: Prometheus
+    name: k8s
+    uid: 234549b5-6bd0-4ac2-b652-e2e3239d9bd2
+  resourceVersion: "1369436"
+  uid: 2b043cad-c1fa-4b42-9ce1-5190f31ed2cc
+care1@MacBookPro day10 % vim prometheusrules.yml
+care1@MacBookPro day10 % kubectl apply -f prometheusrules.yml 
+prometheusrule.monitoring.coreos.com/nginx-prometheus-rule created
+care1@MacBookPro day10 % kubectl get prometheusrules -n monitoring
+
+NAME                              AGE
+alertmanager-main-rules           6d23h
+grafana-rules                     6d23h
+kube-prometheus-rules             6d23h
+kube-state-metrics-rules          6d23h
+kubernetes-monitoring-rules       6d23h
+nginx-prometheus-rule             12s
+node-exporter-rules               6d23h
+prometheus-k8s-prometheus-rules   6d23h
+prometheus-operator-rules         6d23h
+care1@MacBookPro day10 % vim prometheusrules.yml             
+care1@MacBookPro day10 % kubectl apply -f prometheusrules.yml     
+prometheusrule.monitoring.coreos.com/nginx-prometheus-rule configured
